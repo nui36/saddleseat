@@ -1,0 +1,6 @@
+name: SaddleSeat
+version: 1.0.0
+main: th.saddleseat.SaddleSeat
+api-version: "1.20"
+author: Nakharin
+description: ใช้อานม้า + Shift + คลิกขวา เพื่อทำให้บล็อกนั่งได้ (รองรับ Geyser/Bedrock)
