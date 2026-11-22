@@ -1,5 +1,62 @@
-# ความสูงที่นั่งเทียบกับผิวบล็อก (ปรับถ้าตัวละครจมหรือลอย)
-seat-y-offset: 0.3
+# รูปแบบที่นั่งแยกตามชนิดบล็อก (ตรวจจากบนลงล่าง อันแรกที่ตรงจะถูกใช้)
+# offsets: x/y/z วัดจากมุมล่างของบล็อก (x,z 0.5 = กึ่งกลางบล็อก)
+#   ใส่ base: TOP ใน offsets ถ้าอยากให้ y วัดจากผิวบนของบล็อกแทน
+# check: BLOCKDATA (ชื่อคลาสของ block data) หรือ BLOCKS (ชื่อวัสดุ)
+# ใช้ /saddleseat reload เพื่อโหลดค่าใหม่
+sitables:
+  stairs:
+    entity:
+      type: PIG
+      saddle: true
+    offsets:
+      x: 0.5
+      y: -0.4
+      z: 0.5
+    check: BLOCKDATA
+    list:
+      - org.bukkit.block.data.type.Stairs
+
+  slabs:
+    entity:
+      type: PIG
+      saddle: true
+    offsets:
+      x: 0.5
+      y: -0.4
+      z: 0.5
+    check: BLOCKDATA
+    list:
+      - org.bukkit.block.data.type.Slab
+
+  fun:
+    # ถ้า require เป็น true ผู้เล่นต้องมี permission ตามชื่อด้านล่าง (%s = ชื่อ layout)
+    permission:
+      require: true
+      name: "sit.%s"
+    entity:
+      type: ARMOR_STAND
+    offsets:
+      x: 0.5
+      y: -1.1
+      z: 0.5
+    check: BLOCKS
+    list:
+      - END_ROD
+
+# บล็อกอื่นๆ ที่ไม่ตรงกับด้านบน
+default-layout:
+  entity:
+    type: ARMOR_STAND
+  offsets:
+    base: TOP
+    x: 0.5
+    y: 0.3
+    z: 0.5
+
+# เปิดเพื่อดูข้อมูลใน console ตอนนั่ง
+debug: false
+
 messages:
   marked: "§aบล็อกนี้นั่งได้แล้ว! คลิกขวามือเปล่าเพื่อนั่ง"
   occupied: "§cมีคนนั่งอยู่แล้ว"
+  no-permission: "§cคุณไม่มีสิทธิ์นั่งบล็อกนี้"

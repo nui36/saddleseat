@@ -1,6 +1,15 @@
 name: SaddleSeat
-version: 1.0.0
+version: 1.2.0
 main: th.saddleseat.SaddleSeat
 api-version: "1.20"
 author: Nakharin
 description: ใช้อานม้า + Shift + คลิกขวา เพื่อทำให้บล็อกนั่งได้ (รองรับ Geyser/Bedrock)
+commands:
+  saddleseat:
+    description: คำสั่งของ SaddleSeat
+    usage: /saddleseat reload
+    permission: saddleseat.reload
+permissions:
+  saddleseat.reload:
+    description: รีโหลด config
+    default: op
