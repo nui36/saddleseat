@@ -5,6 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Stairs;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -42,6 +44,7 @@ public class SaddleSeat extends JavaPlugin implements Listener {
         EntityType type = EntityType.ARMOR_STAND;
         boolean saddle;
         double x = 0.5, y = 0, z = 0.5;
+        double shift; // ขยับไปทางด้านขั้นต่ำของบันได
         boolean fromTop;
         boolean checkBlocks;
         final List<Class<?>> classes = new ArrayList<>();
@@ -49,13 +52,29 @@ public class SaddleSeat extends JavaPlugin implements Listener {
         boolean permRequire;
         String permName;
 
+        final List<String> dataContains = new ArrayList<>();
+
         boolean matches(Block b) {
-            if (checkBlocks) return materials.contains(b.getType());
-            BlockData d = b.getBlockData();
-            for (Class<?> c : classes) {
-                if (c.isInstance(d)) return true;
+            boolean base = false;
+            if (checkBlocks) {
+                base = materials.contains(b.getType());
+            } else {
+                BlockData d = b.getBlockData();
+                for (Class<?> c : classes) {
+                    if (c.isInstance(d)) {
+                        base = true;
+                        break;
+                    }
+                }
             }
-            return false;
+            if (!base) return false;
+            if (!dataContains.isEmpty()) {
+                String ds = b.getBlockData().getAsString().toLowerCase();
+                for (String c : dataContains) {
+                    if (!ds.contains(c)) return false;
+                }
+            }
+            return true;
         }
     }
 
@@ -78,7 +97,7 @@ public class SaddleSeat extends JavaPlugin implements Listener {
         }
         loadLayouts();
         getServer().getPluginManager().registerEvents(this, this);
-        getLogger().info("SaddleSeat build 1.2 enabled, layouts: " + layouts.size());
+        getLogger().info("SaddleSeat build 1.3 enabled, layouts: " + layouts.size());
     }
 
     @Override
@@ -140,12 +159,14 @@ public class SaddleSeat extends JavaPlugin implements Listener {
         l.y = s.getDouble("offsets.y", 0);
         l.z = s.getDouble("offsets.z", 0.5);
         l.fromTop = s.getString("offsets.base", "BOTTOM").equalsIgnoreCase("TOP");
+        l.shift = s.getDouble("offsets.shift", 0);
 
         l.permRequire = s.getBoolean("permission.require", false);
         l.permName = s.getString("permission.name", "sit.%s").replace("%s", name);
 
         if (withList) {
             l.checkBlocks = s.getString("check", "BLOCKDATA").equalsIgnoreCase("BLOCKS");
+            for (String c : s.getStringList("data-contains")) l.dataContains.add(c.toLowerCase());
             for (String item : s.getStringList("list")) {
                 if (l.checkBlocks) {
                     Material m = Material.matchMaterial(item);
@@ -235,7 +256,13 @@ public class SaddleSeat extends JavaPlugin implements Listener {
         double refY = l.fromTop ? topY : block.getY();
 
         World w = block.getWorld();
-        Location loc = new Location(w, block.getX() + l.x, refY + l.y, block.getZ() + l.z,
+        double dx = 0, dz = 0;
+        if (l.shift != 0 && block.getBlockData() instanceof Stairs st) {
+            BlockFace low = st.getFacing().getOppositeFace();
+            dx = low.getModX() * l.shift;
+            dz = low.getModZ() * l.shift;
+        }
+        Location loc = new Location(w, block.getX() + l.x + dx, refY + l.y, block.getZ() + l.z + dz,
                 p.getLocation().getYaw(), 0f);
         Location exit = new Location(w, block.getX() + 0.5, topY + 0.1, block.getZ() + 0.5);
 

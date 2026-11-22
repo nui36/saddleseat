@@ -1,49 +1,46 @@
 # รูปแบบที่นั่งแยกตามชนิดบล็อก (ตรวจจากบนลงล่าง อันแรกที่ตรงจะถูกใช้)
 # offsets: x/y/z วัดจากมุมล่างของบล็อก (x,z 0.5 = กึ่งกลางบล็อก)
-#   ใส่ base: TOP ใน offsets ถ้าอยากให้ y วัดจากผิวบนของบล็อกแทน
+#   base: TOP   = ให้ y วัดจากผิวบนของบล็อกแทนมุมล่าง
+#   shift       = ขยับไปทางด้านขั้นต่ำของบันได (ใช้กับบันไดเท่านั้น)
 # check: BLOCKDATA (ชื่อคลาสของ block data) หรือ BLOCKS (ชื่อวัสดุ)
+# data-contains: (ไม่บังคับ) ต้องมีข้อความเหล่านี้ใน block data ทุกข้อ
 # ใช้ /saddleseat reload เพื่อโหลดค่าใหม่
 sitables:
+  # บันไดปกติ (ไม่คว่ำ): นั่งบนขั้นต่ำ
+  # ถ้านั่งสูงไป ลด y / ถ้าจมบล็อก เพิ่ม y
   stairs:
-    entity:
-      type: PIG
-      saddle: true
-    offsets:
-      x: 0.5
-      y: -0.4
-      z: 0.5
-    check: BLOCKDATA
-    list:
-      - org.bukkit.block.data.type.Stairs
-
-  slabs:
-    entity:
-      type: PIG
-      saddle: true
-    offsets:
-      x: 0.5
-      y: -0.4
-      z: 0.5
-    check: BLOCKDATA
-    list:
-      - org.bukkit.block.data.type.Slab
-
-  fun:
-    # ถ้า require เป็น true ผู้เล่นต้องมี permission ตามชื่อด้านล่าง (%s = ชื่อ layout)
-    permission:
-      require: true
-      name: "sit.%s"
     entity:
       type: ARMOR_STAND
     offsets:
       x: 0.5
-      y: -1.1
+      y: 0.8
       z: 0.5
-    check: BLOCKS
+      shift: 0.2
+    check: BLOCKDATA
+    data-contains:
+      - "half=bottom"
     list:
-      - END_ROD
+      - org.bukkit.block.data.type.Stairs
 
-# บล็อกอื่นๆ ที่ไม่ตรงกับด้านบน
+  # ตัวอย่าง: บล็อกเฉพาะชนิด + ต้องมี permission
+  # (ใช้ ARMOR_STAND ได้ไม่เห็นหลอดเลือด ถ้าใช้ PIG ที่มีอานจะเห็นหลอดเลือดของหมูบนหน้าจอ)
+  # fun:
+  #   permission:
+  #     require: true
+  #     name: "sit.%s"
+  #   entity:
+  #     type: ARMOR_STAND
+  #   offsets:
+  #     base: TOP
+  #     x: 0.5
+  #     y: 0.3
+  #     z: 0.5
+  #   check: BLOCKS
+  #   list:
+  #     - END_ROD
+
+# บล็อกอื่นๆ ทั้งหมดที่ไม่ตรงกับด้านบน (สแลบ บล็อกเต็ม บันไดคว่ำ ฯลฯ)
+# ความสูงคำนวณจากผิวบนของบล็อกจริง จึงใช้ได้ทั้งสแลบล่าง/บน
 default-layout:
   entity:
     type: ARMOR_STAND
